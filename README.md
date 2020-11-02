@@ -22,11 +22,11 @@ Well Done! Now you just need to create your modules:
   - If you now check the pom file of the parent project you may see that now you'd have something like this:
 
 ```sh
-        <modules>
-            <module>runnable</module>
-    		<module>clients</module>
-    		<module>users</module>
-	    </modules>
+<modules>
+	<module>runnable</module>
+	<module>clients</module>
+	<module>users</module>
+</modules>
 ```
 
 ## Mongo Database
