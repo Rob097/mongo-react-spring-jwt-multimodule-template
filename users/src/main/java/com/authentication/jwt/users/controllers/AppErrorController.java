@@ -8,6 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * @author Roberto97
+ * Class used to handle the different errors that calls the path /error.
+ * Depending on the error code a different aaction is taken.
+ * I an action is not set for a specific code, than the code is printed in the console.
+ */
 @Controller
 public class AppErrorController implements ErrorController {
 	

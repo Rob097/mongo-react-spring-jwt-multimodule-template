@@ -15,6 +15,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author Roberto97
+ * Entity of Users. Those who can log in and sign in into the application.
+ */
 @Document(collection = "users")
 @Data
 @AllArgsConstructor

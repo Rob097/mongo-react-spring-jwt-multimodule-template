@@ -1,0 +1,13 @@
+com.authentication.jwt.clients.controllers
+com.authentication.jwt.clients.models
+com.authentication.jwt.clients.repository
+com.authentication.jwt.clients.services
+com.authentication.jwt.runnable.main
+com.authentication.jwt.users.controllers
+com.authentication.jwt.users.models
+com.authentication.jwt.users.payload.request
+com.authentication.jwt.users.payload.response
+com.authentication.jwt.users.repository
+com.authentication.jwt.users.security.configuration
+com.authentication.jwt.users.security.jwt
+com.authentication.jwt.users.services

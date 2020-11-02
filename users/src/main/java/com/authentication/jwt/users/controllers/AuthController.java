@@ -36,9 +36,12 @@ import com.authentication.jwt.users.repository.UserRepository;
 import com.authentication.jwt.users.security.jwt.JwtUtils;
 import com.authentication.jwt.users.services.UserDetailsImpl;
 
+/**
+ * @author Roberto97
+ * Class used to perform action on the paths that are relative to an authentication action.
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-//@CrossOrigin(origins="http://localhost:3000", maxAge = 3600)
 @RequestMapping("/api/auth")
 public class AuthController {
 	@Autowired
@@ -59,6 +62,12 @@ public class AuthController {
 	@Value("${bezkoder.app.jwtHeader}")
 	private String tokenHeader;
 
+	/**
+	 * Used when a user try to login.
+	 * It check if the params are ok and if they are, it creates and response with a JWT token.
+	 * @param loginRequest : Encapsulation of main parameters used to login (username and password).
+	 * @return JwtResponse with the token and the roles.
+	 */
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -72,12 +81,16 @@ public class AuthController {
 		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
-		// System.out.println("ROLES: " + roles);
-
 		return ResponseEntity.ok(
 				new JwtResponse(token, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
 	}
 	
+	/**
+	 * Method used when a token is going to expire and a user chose to refresh it.
+	 * @param request
+	 * @param response
+	 * @return Bad request if something went wrong or an JwtResponse with the new token
+	 */
 	@RequestMapping(value = "/refresh-token", method = RequestMethod.GET)
 	public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
 
@@ -96,6 +109,12 @@ public class AuthController {
 		}
 	}
 
+	/**
+	 * Method used when a user want to sign up to the application.
+	 * It also check the roles.
+	 * @param signUpRequest
+	 * @return badRequest if something went wrong or a ok response instead.
+	 */
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {

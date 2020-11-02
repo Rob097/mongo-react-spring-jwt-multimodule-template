@@ -19,10 +19,15 @@ import org.springframework.web.server.ResponseStatusException;
 import com.authentication.jwt.clients.models.Clienti;
 import com.authentication.jwt.clients.services.ClientiService;
 
+/**
+ * @author Roberto97
+ *Controller of Clients.
+ * All the methods in this controller are under the path "/api/clienti" and in particular each one has it's relative path.
+ * All the methods are also with a different http method between GET, POS and DELETE.
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/clienti")
-
 public class ClientiController {
 
 	@Autowired
@@ -33,6 +38,13 @@ public class ClientiController {
 		return "Autenticazione OK";
 	}
 	
+	
+	/**
+	 * Method used to inserrt a client in the DB.
+	 * It get, by post request, the client object and thanks to the Salva method of the clientiService, it add the client to the DB
+	 * @param NewCliente Oggetto cliente creato nella form react
+	 * @return Entity of Clienti type and CREATED status
+	 */
 	@PostMapping(value= "/inserisci", produces = "application/json")
 	public ResponseEntity<Clienti> insertCli(@RequestBody Clienti NewCliente){
 		
