@@ -59,7 +59,7 @@ public class AuthController {
 	@Autowired
 	private JwtUtils jwtUtils;
 
-	@Value("${bezkoder.app.jwtHeader}")
+	@Value("${jwtHeader}")
 	private String tokenHeader;
 
 	/**

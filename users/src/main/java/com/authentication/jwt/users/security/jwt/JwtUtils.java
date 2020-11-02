@@ -16,11 +16,12 @@ import com.authentication.jwt.users.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClock;
 
-/*
- * Tale classe costruisce il token andando a salvare nel payload del token le informazioni utili contenute nella nostra implementazione di userdetails e 
- * impostando una data di scadenza di un numero di secondi  pari al valore della properties jwtExpirationMs
+/**
+ * @author Roberto97 This class build the token saving into the payload of it
+ *         the most useful informations that are inside our implementation of
+ *         userDetails and setting an expiring date equals to the property
+ *         jwtExpirationMs
  */
-
 @Component
 public class JwtUtils implements Serializable {
 
@@ -28,16 +29,21 @@ public class JwtUtils implements Serializable {
 
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-	@Value("${bezkoder.app.jwtSecret}")
+	@Value("${jwtSecret}")
 	private String jwtSecret;
 
-	@Value("${bezkoder.app.jwtExpirationMs}")
+	@Value("${jwtExpirationMs}")
 	private int jwtExpirationMs;
 
 	static final String CLAIM_KEY_AUTHORITIES = "roles";
 
 	private static Clock clock = DefaultClock.INSTANCE;
 
+	/**
+	 * @param authentication
+	 * @return the token as a String
+	 * Method used for the initial generation of the JWT token. 
+	 */
 	public String generateJwtToken(Authentication authentication) {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -124,6 +130,11 @@ public class JwtUtils implements Serializable {
 		return new Date(createdDate.getTime() + jwtExpirationMs * 1000);
 	}
 
+	/**
+	 * @param token
+	 * @return the token as a String
+	 * Method used to generate a refreshed JWT token. 
+	 */
 	public String refreshToken(String token) {
 		final Date createdDate = clock.now();
 		final Date expirationDate = calculateExpirationDate(createdDate);

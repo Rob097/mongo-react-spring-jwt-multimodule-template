@@ -15,6 +15,10 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Roberto97
+ * Class that work as Exception Handler in Spring security
+ */
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint, AccessDeniedHandler, Serializable {
 

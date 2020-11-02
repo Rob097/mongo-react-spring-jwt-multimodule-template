@@ -20,65 +20,65 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.authentication.jwt.users.services.UserDetailsServiceImpl;
 
-
-/*
- * Tale filtro ha l’importantissimo compito di intercettare ogni richiesta che arriva sul backend per verificare validità del token e 
- * impostare come autenticata la richiesta arrivata, ricostruendo l’userdetails a partire dei claims contenuti nel token.
+/**
+ * @author Roberto97
+ * This filter has the really important purpose of intercept every request that arrives in the backend part of the application to 
+ * verify the validity of the token and set as authenticated the request, and as final step, responsing with the UserDetails with the claims arrived with the request
  */
+public class AuthTokenFilter extends OncePerRequestFilter {
 
+	@Autowired
+	private JwtUtils jwtUtils;
 
-public class AuthTokenFilter extends OncePerRequestFilter {	
-	
-  @Autowired
-  private JwtUtils jwtUtils;
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
 
-  @Autowired
-  private UserDetailsServiceImpl userDetailsService;
-  
-  @Value("${bezkoder.app.jwtHeader}")
-  private String tokenHeader;
-  
-  @Value("${bezkoder.app.jwtConstant}")
-  private String tokenConstant;
+	@Value("${jwtHeader}")
+	private String tokenHeader;
 
-  private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+	@Value("${jwtConstant}")
+	private String tokenConstant;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-    try {
-      String jwt = parseJwt(request);
-      
-      /*
-       * Se il token viene giudicato valido viene impostato nel contesto della request l’autenticazione con relativo principal e 
-       * viene invocata la chain.doFilter la quale farà scattare i  filtri di Spring Security.
-       */
-      
-      
-      if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+	private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
-        String username = jwtUtils.getUserNameFromJwtToken(jwt);
+	/**
+	 * Se il token viene giudicato valido viene impostato nel contesto della request
+	 * l’autenticazione con relativo principal e viene invocata la chain.doFilter la
+	 * quale farà scattare i filtri di Spring Security. If the token is considered
+	 * as valid, the authentication is setted inside the request. Then the
+	 * filterChain.doFilter is invoked.
+	 * 
+	 */
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		try {
+			String jwt = parseJwt(request);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-            userDetails.getAuthorities());
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-      }
-    } catch (Exception e) {
-      logger.error("Cannot set user authentication: {}", e);
-    }
+				String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-    filterChain.doFilter(request, response);
-  }
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-  private String parseJwt(HttpServletRequest request) {
-    String headerAuth = request.getHeader(tokenHeader);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		} catch (Exception e) {
+			logger.error("Cannot set user authentication: {}", e);
+		}
 
-    if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(tokenConstant)) {
-      return headerAuth.substring(7, headerAuth.length());
-    }
-    return null;
-  }
+		filterChain.doFilter(request, response);
+	}
+
+	private String parseJwt(HttpServletRequest request) {
+		String headerAuth = request.getHeader(tokenHeader);
+
+		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(tokenConstant)) {
+			return headerAuth.substring(7, headerAuth.length());
+		}
+		return null;
+	}
 }

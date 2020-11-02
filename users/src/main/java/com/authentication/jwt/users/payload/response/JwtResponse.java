@@ -2,6 +2,10 @@ package com.authentication.jwt.users.payload.response;
 
 import java.util.List;
 
+/**
+ * @author Roberto97 This is the entity used for the response of JWT. It allows
+ *         to pass all the elements as a single object.
+ */
 public class JwtResponse {
 	private String token;
 	private String type = "Bearer";
@@ -17,15 +21,11 @@ public class JwtResponse {
 		this.email = email;
 		this.roles = roles;
 	}
-	
-	
 
 	public JwtResponse(String token) {
 		super();
 		this.token = token;
 	}
-
-
 
 	public String getAccessToken() {
 		return token;

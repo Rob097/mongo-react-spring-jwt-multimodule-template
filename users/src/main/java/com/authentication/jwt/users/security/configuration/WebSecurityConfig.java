@@ -19,19 +19,20 @@ import com.authentication.jwt.users.security.jwt.AuthEntryPointJwt;
 import com.authentication.jwt.users.security.jwt.AuthTokenFilter;
 import com.authentication.jwt.users.services.UserDetailsServiceImpl;
 
-/*
- * E’ la classe fondamentale per configurare Spring Security.
+/**
+ * @author Roberto97
+ * This is the most important class to configure and manage the Spring Security and the JWT
  */
-
-
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-		// securedEnabled = true,
-		// jsr250Enabled = true,
-		prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
+	/**
+	 * USER_MATCHER: Path where you need to have the role of user to access at.
+	 * ADMIN_MATCHER: Path where you need to have the role of admin to access at.
+	 * MOD_MATCHER: Path where you need to have the moderator of user to access at.
+	 */
 	private static final String[] USER_MATCHER = { "/api/clienti/cerca/**"};
 	private static final String[] ADMIN_MATCHER = { "/api/clienti/inserisci/**", "/api/clienti/elimina/**" };
 	private static final String[] MOD_MATCHER = {};
@@ -58,12 +59,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return super.authenticationManagerBean();
 	}
 
-	//Per criptare la password viene utilizzato bCrypt
+	/**
+	 * To crypt the password bCrypt is used.
+	 * @return bCrypt password encoder
+	 */
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+	
+	/**
+	 * Principal method of configuration for this class.
+	 * .cors() is needed to allow the application to manage the CORS POLICY errors.
+	 * The method is easy to understand if you red it.
+	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
@@ -85,19 +95,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest().authenticated();
 			
 		
-		//http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
-
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 		
 		// disable page caching
 		http.headers().cacheControl();
 	}
-	
-	/*@Override
-	public void configure(WebSecurity webSecurity) throws Exception {
-		webSecurity.ignoring().antMatchers(HttpMethod.POST, "/auth")
-				.antMatchers(HttpMethod.OPTIONS, "/**")
-				.and().ignoring()
-				.antMatchers(HttpMethod.GET);
-	}*/
 }
