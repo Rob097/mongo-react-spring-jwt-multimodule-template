@@ -58,7 +58,7 @@ If a module need to be integrate in another you have to include it as a dependen
 
 ```sh
 <dependencies>
-    <dependency>
+	<dependency>
 		<groupId>com.authentication.jwt</groupId>
 		<artifactId>clients</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
