@@ -1,60 +1,46 @@
 import axios from "axios";
+import jwt from "jsonwebtoken"
+import * as Constants from "../constants";
 
 //Funzionalità varie per quanto riguarda il login, l'autenticazione e la comunicazione con le API riguardanti gli utenti.
 class AuthenticationService {
-
-    //Servizio per controllare la user e la password nel login
 
     state = {
         Server: "http://localhost:8080"
     }
 
-    createBasicAuthHeader = (username,password) => 'Basic ' + window.btoa(username + ":" + password);
-
-    createJwtAuthToken = (token) => 'Bearer ' + token;
-
-    authUser = (username, password) => {
-        return axios.get(`${this.state.Server}${this.state.BaseURL}/auth`,
-            {
-                headers: {authorization: this.createBasicAuthHeader(username,password)}
-            }
-        );
-    }
-
+    //Aggiorna il token di accesso
     refreshToken = () => {
         return axios.get(`${this.state.Server}/api/auth/refresh-token`);
     }
 
     //Con l'autenticazione JWT i parametri non vengono passati con un header ma attraverso il body
-    JWTAuthServer = (username,password) => {
+    JWTAuthServer = (username, password, rememberMe) => {
         return axios.post(`${this.state.Server}/api/auth/signin`,
             {
                 username,
-                password
+                password,
+                rememberMe
             }
         );
     }
 
-    saveUserInfo = (username,token) => {
-        sessionStorage.setItem("user", username);
-        sessionStorage.setItem("token", token);
+    //Funzione per ottenere l'username dell'utente loggato
+    getUserInfo = () => {
+        try {
+            let token = jwt.decode(this.getTokenFromCookie());
+            if(token !== null && token !== undefined)
+                return token.sub;
+        } catch (e) {
+            console.log(e);            
+        }
+        return null;
+    };
 
-        //Qui non serve più. è stato spostato nell'AuthRoute.jsx
-        //Dico all'intercettore quando deve essere utilizzato
-        //this.setupAxiosInterceptors(this.createJwtAuthToken(token));
-
-    }
-
-    clearUserInfo = () => {
-        sessionStorage.removeItem("user");
-        sessionStorage.removeItem("token");
-    }
-
-    getUSerInfo = () => sessionStorage.getItem("user");
-
+    //Funzione per verificare se l'utente è loggato
     isLogged = () => {
 
-        let user = this.getUSerInfo();
+        let user = this.getUserInfo();
 
         if (user === null)
             return false;
@@ -63,28 +49,65 @@ class AuthenticationService {
 
     }
 
-    //Questo è un Intercettore (Interceptors).
-    //Servono per svolgere un operazione prima che si invia una richiesta alle webapi
-    setupAxiosInterceptors(token){
+    //Funcione per ottenere il token JWT dal relativo cookie
+    getTokenFromCookie = () => {
+        try {
+            let cookies = document.cookie.split(';');//contains all the cookies
+            let cookieName = []; // to contain name of all the cookies
+            let index = -1;
+            let token;
 
-        console.log("Intercettore token Service: " + token);
+            for (let i = 0; i < cookies.length; i++) {
+                cookieName[i] = cookies[i].split('=')[0].trim();
+            }
+            index = cookieName.indexOf(Constants.TOKEN_COOKIE);
 
-        //Questo è il metodo per usare l'intercettore.
-        axios.interceptors.request.use(
-            //Creo una nuova configurazione
-            (config) => {
-                if(this.isLogged()){
-                    config.headers.authorization = token
+            if (index > -1) {
+                token = cookies[index].split(/=(.+)/)[1];
+                return token;
+            }
+            
+        } catch (e) {
+            console.log(e);
+        }
+        
+        return null;
+    }
+
+
+    //Funzione fondamentale.
+    //Viene chiamata subito all'avvio dell'app da index.js per verificare se l'utente è loggato.
+    //Nel caso sia loggato controlla se vuole essere ricordato e altrimenti cancella i cookies
+    firstCheckIsLogged() {
+        try{
+            if(sessionStorage.getItem("isChecked") === null || !sessionStorage.getItem("isChecked")){
+                let cookies = document.cookie.split(';');//contains all the cookies
+                let cookieName = []; // to contain name of all the cookies
+                let indexR = -1, indexT = -1;
+            
+                for (let i = 0; i < cookies.length; i++) {
+                    cookieName[i] = cookies[i].split('=')[0].trim();
                 }
-                return config;
-            },
-			(err) => {
-				return Promise.reject(err);
-			}
-        )
+                indexR = cookieName.indexOf(Constants.REMEMBER_COOKIE);
+                indexT = cookieName.indexOf(Constants.TOKEN_COOKIE);
+            
+                //Se esiste il cookie con il token e il cookie remember me ed è true
+                if (indexT <= -1 || indexR <= -1 || cookies[indexR].split(/=(.+)/)[1] !== "true") {             
+                    document.cookie = Constants.REMEMBER_COOKIE + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = Constants.TOKEN_COOKIE + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                }
+                sessionStorage.setItem("isChecked", true);
+            }
+        }catch(ex){
+            sessionStorage.setItem("isChecked", false);
+            console.log(ex);
+        }
+    }
 
-        //In saveUserInfo() dico all'intercettore quando dovrà essere utilizzato
-
+    signUp = (utente) => {
+        console.log("signUp");
+        console.log("utente: %O", utente);
+        return axios.post(`${this.state.Server}/api/auth/signup`, utente);
     }
 
 }

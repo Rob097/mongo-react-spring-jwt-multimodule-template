@@ -93,6 +93,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
 			.antMatchers(MOD_MATCHER).hasAnyRole("MODERATOR")
 			.anyRequest().authenticated();
+			//.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login")
+			//.and().rememberMe();
 			
 		
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -49,6 +49,14 @@ You could put all these files directly inside the users module but, expecially i
 ### USERS MODULE
 The Users module is extremely important because is the module that manage the users that can log in or sign up in the application. The authentication is managed by JWT standard. (https://jwt.io/).
 
+Signin:
+The signin function is quite complex. 
+When a user logging in, it call the method JWTAuthServer of AuthenticationService in react frontend and this method call the api authenticateUser at the "/signin" path. Here are stored the information that the user used to authenticate so username, password and the boolean value of the checkbox remindMe.
+There is a control in the database to check if the credentials are correct and to get the user details in particolar the roles of the user.
+Then 2 cookies are created: rememberMe and token
+in the token cookie is stored the jwt token and in the rememberMe the boolean value of the checkbox. If it's true then the expiration of both cookies and of the JWT token are set to 30 days, if instead is false then the expiration dates are set to 2 hours.
+When the user is enough close to the expiration date, an alert window is showed and if the user chose to refresh the token, then a new token is generated and if there was a cookie rememberMe set to true then the expiration date of the new token is also set to 30 days if else it was set to false then the token exp date is set to 2 hours. Then two new cookie are generated with the new informations.
+
 ### CLIENTS MODULE
 The clients module is just a simple module to understand better how to link the different modules and of what is composed a module. Indeed it cointains just the basict so:
   - Modules (Entity)

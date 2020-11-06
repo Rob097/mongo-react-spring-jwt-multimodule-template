@@ -34,6 +34,8 @@ public class JwtUtils implements Serializable {
 
 	@Value("${jwtExpirationMs}")
 	private int jwtExpirationMs;
+	@Value("${jwtExpirationMsRememberMe}")
+	private long jwtExpirationMsRememberMe;
 
 	static final String CLAIM_KEY_AUTHORITIES = "roles";
 
@@ -41,18 +43,26 @@ public class JwtUtils implements Serializable {
 
 	/**
 	 * @param authentication
+	 * @param rememberMe 
 	 * @return the token as a String
 	 * Method used for the initial generation of the JWT token. 
 	 */
-	public String generateJwtToken(Authentication authentication) {
+	public String generateJwtToken(Authentication authentication, boolean rememberMe) {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+		long exp = 0;
 
 		Map<String, Object> claims = new HashMap<>();
 		claims.put(CLAIM_KEY_AUTHORITIES, userPrincipal.getAuthorities());
+		
+		if(rememberMe) {
+			exp = jwtExpirationMsRememberMe;
+		}else {
+			exp = jwtExpirationMs;
+		}
 
 		return Jwts.builder().setClaims(claims).setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+				.setExpiration(new Date((new Date()).getTime() + exp))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
 	}
 
@@ -126,18 +136,26 @@ public class JwtUtils implements Serializable {
 		return (!isTokenExpired(token) || ignoreTokenExpiration(token));
 	}
 
-	private Date calculateExpirationDate(Date createdDate) {
-		return new Date(createdDate.getTime() + jwtExpirationMs * 1000);
+	private Date calculateExpirationDate(Date createdDate, boolean rememberMe) {
+		
+		if (rememberMe) {
+			return new Date(createdDate.getTime() + jwtExpirationMsRememberMe);
+		}else {
+			System.out.println("check: " + rememberMe);
+			return new Date(createdDate.getTime() + jwtExpirationMs);
+		}
+		
 	}
 
 	/**
 	 * @param token
+	 * @param rememberMe it's used to set the expiration date to 30 days if it's true and to 2 hours instead
 	 * @return the token as a String
 	 * Method used to generate a refreshed JWT token. 
 	 */
-	public String refreshToken(String token) {
+	public String refreshToken(String token, boolean rememberMe) {
 		final Date createdDate = clock.now();
-		final Date expirationDate = calculateExpirationDate(createdDate);
+		final Date expirationDate = calculateExpirationDate(createdDate, rememberMe);
 
 		final Claims claims = getAllClaimsFromToken(token);
 		claims.setIssuedAt(createdDate);

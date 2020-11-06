@@ -106,11 +106,9 @@ const AlertsExpired = (props) => {
         click();
         return(
 		AuthenticationService.refreshToken()
-			.then(response => {
-				sessionStorage.setItem("token", response.data.accessToken);
-			})
             .catch(error => console.log(error))
-        );        
+		);
+		        
 	}  	
 }
 

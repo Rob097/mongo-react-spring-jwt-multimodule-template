@@ -20,6 +20,7 @@
     "popper.js": "^1.16.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.4.0",
+    "react-cookie": "^4.0.3",
     "react-countdown-circle-timer": "^2.3.7",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",

@@ -99,7 +99,7 @@ const UserInfo = () => {
         return(
 
             <div className="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="navbarDropdownMenuLink-55">
-                    <p>Benvenuto {AuthenticationService.getUSerInfo()}</p>
+                    <p>Benvenuto {AuthenticationService.getUserInfo()}</p>
                     <Link  className="dropdown-item" to="/logout" >Logout</Link>
             </div>
 

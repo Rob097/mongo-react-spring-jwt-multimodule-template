@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import LoginComponent from './Login/LoginComponent'
 import LogoutComponent from './Logout/LogoutComponent'
+import SignupComponent from './Signup/SignupComponent'
 import WelcomeComponent from "./Welcome/Welcome"
 import Clienti from "./Clienti/Clienti"
 import DatiClienteComponent from "./Clienti/InsClienti/DatiCliente"
@@ -31,6 +32,7 @@ export default class GestFidApp extends Component {
                         <Route path="/" exact component={LoginComponent} />
                         <Route path="/login" component={LoginComponent} />
                         <Route path="/logout" component={LogoutComponent} />
+                        <Route path="/signup" component={SignupComponent} />
                         <AuthRoute path="/welcome/:userId" component={WelcomeComponent} role={this.state.User} />
                         <AuthRoute path="/inscliente/:codfid" component={DatiClienteComponent} role={this.state.Admin} />
                         <AuthRoute path="/clienti" component={Clienti} role={this.state.User} />
