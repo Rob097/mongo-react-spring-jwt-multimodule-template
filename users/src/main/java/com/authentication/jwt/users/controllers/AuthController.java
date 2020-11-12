@@ -70,7 +70,9 @@ public class AuthController {
 	
 	private final String tokenCookieName = "token";
 	private final String rememberCookieName = "rememberMe";
-	private final String domainNameCookies = "localhost";
+	
+	@Value("${domain}")
+	private String domainNameCookies;
 	private final String pathCookies = "/";
 	
 	private Cookie token_cookie = null;

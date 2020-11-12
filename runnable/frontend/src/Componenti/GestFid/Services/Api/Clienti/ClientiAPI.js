@@ -1,10 +1,11 @@
 import axios from "axios";
+import * as Constants from "../../../constants";
 
 //Metodi per comunicare con le API backend relative ai clienti.
 class ClientiService {
 
     state = {
-        Server: "http://localhost:8080",
+        Server: Constants.DOMAIN,
         BaseURL: "/api/clienti"
     }
 

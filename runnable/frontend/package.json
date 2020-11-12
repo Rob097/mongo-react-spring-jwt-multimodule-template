@@ -1,7 +1,7 @@
 {
   "name": "problems-solving",
   "version": "0.1.0",
-  "proxy": "http://localhost:8080",
+  "proxy": "http://192.168.1.107:8080",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",

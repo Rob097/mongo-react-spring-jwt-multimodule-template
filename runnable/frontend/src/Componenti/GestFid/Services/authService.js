@@ -6,7 +6,7 @@ import * as Constants from "../constants";
 class AuthenticationService {
 
     state = {
-        Server: "http://localhost:8080"
+        Server: Constants.DOMAIN
     }
 
     //Aggiorna il token di accesso
